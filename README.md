@@ -12,8 +12,8 @@
 ## ✨ Fonctionnalités Principales
 
 * 🚫 **Bloquage de Pubs (Zero-Ad)** : Intercepte et bloque les publicités Twitch de manière transparente sans perte de qualité ni écran d'attente. Maintien du direct fluide.
-* 🔓 **Débloqueur de VODs (Sub-Only)** : Contourne les restrictions des chaînes pour vous permettre de regarder gratuitement les rediffusions réservées aux abonnés. *(Nécessite un backend proxy).*
-* ⏪ **Lecteur DVR (Direct)** : Met en cache le direct pour vous permettre de mettre pause, de reculer et d'avancer dans le stream en live, exactement comme à la télévision.
+* 🔓 **Débloqueur de VODs (Sub-Only)** : Contourne les restrictions des chaînes pour vous permettre de regarder gratuitement les rediffusions réservées aux abonnés.
+* ⏪ **Lecteur DVR (Direct)** : Met en cache le direct pour vous permettre de reculer et d'avancer dans le stream en live.
 * 💬 **Chat Undelete (Anti-Modération)** : Affiche en gris et barré les messages supprimés par la modération dans le chat Twitch.
 * ⚙️ **Popup de Contrôle** : Activer ou désactiver chaque fonctionnalité (Adblock, VOD, DVR) à la volée via l'interface de l'extension.
 
