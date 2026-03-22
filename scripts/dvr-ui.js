@@ -1542,32 +1542,50 @@
         // Initial check
         initializeForChannel();
 
-        // Watch for URL changes (SPA navigation) using history API hooks
-        let lastPath = window.location.pathname;
-        function onUrlChange() {
-            const newPath = window.location.pathname;
-            if (newPath !== lastPath) {
-                lastPath = newPath;
-                console.log('[DVR UI] URL changed to', newPath, '- re-initializing...');
-                // Small delay to let SPA finish rendering
-                setTimeout(initializeForChannel, 1000);
+        // Watch for URL changes (SPA navigation) using custom event
+        window.addEventListener('TWITCH_DVR_URL_CHANGED', () => {
+            console.log('[DVR UI] URL change event received - re-initializing for channel...');
+            // Small delay to let SPA finish rendering
+            setTimeout(initializeForChannel, 1000);
+        });
+    }
+
+    // --- GLOBAL SPA NAVIGATION DETECTION ---
+    // This runs permanently even if initDvrBar aborts (e.g. on home page)
+    let lastPath = window.location.pathname;
+    function checkUrlChange() {
+        const newPath = window.location.pathname;
+        if (newPath !== lastPath) {
+            lastPath = newPath;
+            console.log('[DVR UI] Global URL change detected:', newPath);
+
+            // 1. Notify existing DVR instances to update
+            window.dispatchEvent(new CustomEvent('TWITCH_DVR_URL_CHANGED'));
+
+            // 2. If DVR bar is not injected yet (e.g. started on homepage), try to bootstrap it
+            if (!document.getElementById(DVR_BAR_ID)) {
+                console.log('[DVR UI] DVR not found on new page, attempting bootstrap...');
+                setTimeout(initDvrBar, 2000);
             }
         }
-
-        // Hook pushState and replaceState to detect SPA navigation
-        const origPushState = history.pushState;
-        history.pushState = function() {
-            origPushState.apply(this, arguments);
-            onUrlChange();
-        };
-        const origReplaceState = history.replaceState;
-        history.replaceState = function() {
-            origReplaceState.apply(this, arguments);
-            onUrlChange();
-        };
-        // Also listen for popstate (back/forward browser buttons)
-        window.addEventListener('popstate', onUrlChange);
     }
+
+    // Hook pushState and replaceState
+    const origPushState = history.pushState;
+    history.pushState = function() {
+        origPushState.apply(this, arguments);
+        checkUrlChange();
+    };
+
+    const origReplaceState = history.replaceState;
+    history.replaceState = function() {
+        origReplaceState.apply(this, arguments);
+        checkUrlChange();
+    };
+
+    // Listen for back/forward
+    window.addEventListener('popstate', checkUrlChange);
+    // ---------------------------------------
 
     // Keyboard navigation: Left/Right arrows seek -10s/+10s
     // Placed outside initDvrBar to prevent multiple bindings if init is called again
