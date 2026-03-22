@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Twitch AdBlocker</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" width="28" height="28">
+          <path fill="currentColor"
+            d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z" />
+        </svg>
+        <span>AdBlocker+</span>
+      </div>
+    </div>
+
+    <div class="status-section">
+      <div class="status-indicator" id="statusIndicator">
+        <span class="status-dot"></span>
+        <span class="status-text" id="statusText">Actif</span>
+      </div>
+    </div>
+
+    <div class="toggle-section" style="flex-direction: column; align-items: stretch; gap: 15px;">
+      <div class="toggle-row" style="display: flex; justify-content: space-between; align-items: center;">
+        <span class="toggle-label" style="margin-left: 0; font-weight: 500;">Bloquer les pubs</span>
+        <label class="toggle">
+          <input type="checkbox" id="adblockToggle" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="toggle-row" style="display: flex; justify-content: space-between; align-items: center;">
+        <span class="toggle-label" style="margin-left: 0; font-weight: 500;">Débloquer les VODs</span>
+        <label class="toggle">
+          <input type="checkbox" id="vodToggle" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="toggle-row" style="display: flex; justify-content: space-between; align-items: center;">
+        <span class="toggle-label" style="margin-left: 0; font-weight: 500;">Bouton DVR (Retour arrière)</span>
+        <label class="toggle">
+          <input type="checkbox" id="dvrToggle" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="stats-section">
+      <div class="stat">
+        <span class="stat-value" id="adsBlocked">0</span>
+        <span class="stat-label">🚫 Pubs bloquées</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="vodsUnlocked">0</span>
+        <span class="stat-label">🔓 VODs débloquées</span>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>Pubs + VODs Sub-Only = Bye bye 👋</span>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+
+</html>

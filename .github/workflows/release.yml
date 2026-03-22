@@ -1,0 +1,26 @@
+name: Build and Release Extension
+
+on:
+  push:
+    tags:
+      - 'v*' # S'exécute uniquement si tu pousses un tag commençant par 'v' (ex: v1.0.0)
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Requis pour créer une release
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Zip extension files
+        run: |
+          zip -r TwitchAdBlocker-Extension.zip . -x "*.git*" "*.github*" ".gitignore"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: TwitchAdBlocker-Extension.zip
+          generate_release_notes: true
