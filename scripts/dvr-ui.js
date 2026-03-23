@@ -1478,7 +1478,7 @@
                             dvrBar.style.display = 'none';
                         } else {
                             // DOM FALLBACK LOGIC
-                            // Token check failed (cached out). We must poll the DOM for the sub button.
+                            // Token check failed (cached out). We must poll the DOM for the native DVR (seekbar).
                             console.log('[DVR UI] Sub status pending via token for', channelName, '- starting DOM fallback check');
                             dvrBar.style.display = 'none'; // Hide temporarily until we know
 
@@ -1495,20 +1495,20 @@
 
                                 domChecksAttempts++;
 
-                                // Look for SUB button (manage)
-                                const subBtn = document.querySelector('[data-a-target="manage-sub-button"]');
-                                if (subBtn) {
-                                    console.log('[DVR UI] DOM Fallback: User IS SUBBED to', channelName);
+                                // Look for Twitch Native DVR (seekbar)
+                                const nativeDvr = document.querySelector('[data-a-target="player-seekbar"]');
+                                if (nativeDvr) {
+                                    console.log('[DVR UI] DOM Fallback: Native DVR detected for', channelName, '(User has DVR access)');
                                     dvrState.isSubscriber = true;
                                     dvrBar.style.display = 'none';
                                     clearInterval(domCheckInterval);
                                     return;
                                 }
 
-                                // Look for NON-SUB button (subscribe/resubscribe)
-                                const nonSubBtn = document.querySelector('[data-a-target="subscribe-button"]');
-                                if (nonSubBtn) {
-                                    console.log('[DVR UI] DOM Fallback: User is NOT SUBBED to', channelName);
+                                // Si les contrôles du lecteur sont chargés mais qu'il n'y a pas de seekbar au bout d'environ 3 secondes (6 * 500ms)
+                                const playerControls = document.querySelector('.player-controls__left-control-group') || document.querySelector('[data-a-target="player-controls"]');
+                                if (playerControls && domChecksAttempts > 6) {
+                                    console.log('[DVR UI] DOM Fallback: Player controls loaded but no native DVR found. Showing custom DVR.');
                                     dvrState.isSubscriber = false;
                                     dvrBar.style.display = 'block';
                                     clearInterval(domCheckInterval);
@@ -1516,7 +1516,7 @@
                                 }
 
                                 if (domChecksAttempts >= maxAttempts) {
-                                    console.log('[DVR UI] DOM Fallback: Could not find any sub button after 15s. Defaulting to show DVR.');
+                                    console.log('[DVR UI] DOM Fallback: Timeout (15s). Defaulting to show custom DVR.');
                                     // By default, if we can't figure it out, we show the DVR.
                                     dvrState.isSubscriber = false;
                                     dvrBar.style.display = 'block';

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Twitch AdBlocker+",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Block Twitch ads + Watch sub-only VODs for free",
   "permissions": [
     "storage"
