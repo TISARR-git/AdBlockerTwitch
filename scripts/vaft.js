@@ -1237,6 +1237,20 @@
                 fetchRequest.options && typeof fetchRequest.options.body === 'string' &&
                 fetchRequest.options.body.includes('PlaybackAccessToken')) {
                 try {
+                    // Check if this is a backup anti-ad request (not the real viewer token)
+                    let isBackupRequest = false;
+                    try {
+                        const bodyJson = JSON.parse(fetchRequest.options.body);
+                        const queries = Array.isArray(bodyJson) ? bodyJson : [bodyJson];
+                        for (const q of queries) {
+                            const pt = q?.variables?.playerType;
+                            if (pt && (pt === 'embed' || pt === 'popout' || pt === 'autoplay')) {
+                                isBackupRequest = true;
+                                break;
+                            }
+                        }
+                    } catch(e) {}
+
                     const data = JSON.parse(responseBody);
                     const queries = Array.isArray(data) ? data : [data];
                     let foundToken = false;
@@ -1245,6 +1259,12 @@
                             foundToken = true;
                             const tokenData = JSON.parse(query.data.streamPlaybackAccessToken.value);
                             const isSub = tokenData.subscriber === true || tokenData.hide_ads === true;
+
+                            // Don't let backup tokens overwrite a confirmed sub status
+                            if (isBackupRequest && window.__twitchSubscriberStatus === true && !isSub) {
+                                console.log('[TwitchAdBlocker] Worker: Ignoring backup token sub=false (already confirmed sub)');
+                                continue;
+                            }
 
                             window.__twitchSubscriberStatus = isSub;
                             window.dispatchEvent(new CustomEvent('twitch-sub-status', { detail: { isSub } }));
@@ -1380,6 +1400,22 @@
 
             // Intercept the PlaybackAccessToken response safely without breaking other vaft.js overrides
             if (isPlaybackAccessTokenQuery) {
+                // Check if this is a backup anti-ad request by inspecting the playerType
+                let isBackupTokenRequest = false;
+                if (init && typeof init.body === 'string') {
+                    try {
+                        const bodyJson = JSON.parse(init.body);
+                        const queries = Array.isArray(bodyJson) ? bodyJson : [bodyJson];
+                        for (const q of queries) {
+                            const pt = q?.variables?.playerType;
+                            if (pt && (pt === 'embed' || pt === 'popout' || pt === 'autoplay')) {
+                                isBackupTokenRequest = true;
+                                break;
+                            }
+                        }
+                    } catch(e) {}
+                }
+
                 fetchPromise.then(response => {
                     const clone = response.clone();
                     clone.json().then(data => {
@@ -1393,6 +1429,13 @@
 
                                     // Based on live GraphQl trace: the props are 'subscriber' and 'hide_ads'
                                     const isSub = tokenData.subscriber === true || tokenData.hide_ads === true;
+
+                                    // Don't let backup tokens overwrite a confirmed sub status
+                                    if (isBackupTokenRequest && window.__twitchSubscriberStatus === true && !isSub) {
+                                        console.log('[TwitchAdBlocker] Ignoring backup token sub=false (already confirmed sub)');
+                                        continue;
+                                    }
+
                                     console.log('[TwitchAdBlocker] Subscriber status check:', isSub, tokenData);
 
                                     // Set global variable for dvr-ui.js

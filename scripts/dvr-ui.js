@@ -28,7 +28,16 @@
 
     // Listen for early sub status before UI initializes
     window.addEventListener('twitch-sub-status', (event) => {
-        dvrState.isSubscriber = event.detail.isSub;
+        const newStatus = event.detail.isSub;
+
+        // PROTECTION: Never downgrade from confirmed sub to non-sub
+        // This prevents backup anti-ad tokens from incorrectly resetting status
+        if (dvrState.isSubscriber === true && newStatus === false) {
+            console.log('[DVR UI] Ignoring sub status downgrade (already confirmed sub)');
+            return;
+        }
+
+        dvrState.isSubscriber = newStatus;
         console.log('[DVR UI] Received sub status event:', dvrState.isSubscriber);
 
         // If the UI is already built and enabled, apply it immediately
@@ -1429,10 +1438,17 @@
             }
 
             // Reset state for new channel
+            const isRealChannelChange = !dvrState.channelName || channelName.toLowerCase() !== dvrState.channelName.toLowerCase();
             dvrState.channelName = channelName;
             dvrState.initialized = true;
             dvrState.enabled = false;
-            dvrState.isSubscriber = null; // Re-evaluate sub status on channel change
+            // Only reset sub status on a REAL channel change, not on re-init of the same channel
+            if (isRealChannelChange) {
+                dvrState.isSubscriber = null;
+                console.log('[DVR UI] Channel changed to', channelName, '- resetting sub status');
+            } else {
+                console.log('[DVR UI] Re-init for same channel', channelName, '- keeping sub status:', dvrState.isSubscriber);
+            }
             dvrState.vodId = null;
             dvrState.vodPlaylistUrl = null;
             dvrState.isVodMode = false;
