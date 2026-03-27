@@ -54,6 +54,38 @@
         console.log('[DVR UI] Found existing sub status window var:', dvrState.isSubscriber);
     }
 
+    // Listen for settings from content.js EARLY - before initDvrBar runs
+    // This must be at the top level to catch broadcasts at 0ms, 500ms, 2000ms
+    window.addEventListener('message', (event) => {
+        if (!event.data) return;
+
+        if (event.data.type === 'TWITCH_ADBLOCK_SETTINGS') {
+            const settings = event.data.settings;
+            if (settings) {
+                if (typeof settings.dvrEnabled !== 'undefined') {
+                    dvrState.userEnabled = settings.dvrEnabled;
+                    console.log('[DVR UI] Settings received. DVR User Enabled:', dvrState.userEnabled);
+                    // Force update UI visibility immediately if DOM exists
+                    const dvrBar = document.getElementById(DVR_BAR_ID);
+                    if (dvrBar) {
+                        if (!dvrState.userEnabled) {
+                            dvrBar.style.display = 'none';
+                        } else if (dvrState.userEnabled && dvrState.enabled && dvrState.isSubscriber === false) {
+                            dvrBar.style.display = 'block';
+                        }
+                    }
+                }
+                if (typeof settings.donationIconEnabled !== 'undefined') {
+                    dvrState.donationIconEnabled = settings.donationIconEnabled;
+                    const donBtn = document.getElementById('dvr-donation-btn');
+                    if (donBtn) {
+                        donBtn.style.display = dvrState.donationIconEnabled ? 'inline-block' : 'none';
+                    }
+                }
+            }
+        }
+    });
+
     // Debounce timer for seeks in VOD mode
     let seekDebounceTimer = null;
     const SEEK_DEBOUNCE_MS = 300;
@@ -1406,32 +1438,11 @@
         });
         dvrBar.addEventListener('mousemove', showDvrBar);
 
-        // Check if DVR is available (listen for messages from worker or settings)
+        // Listen for DVR_STATUS messages (settings are handled at top-level)
         window.addEventListener('message', (event) => {
             if (!event.data) return;
 
-            if (event.data.type === 'TWITCH_ADBLOCK_SETTINGS') {
-                const settings = event.data.settings;
-                if (settings) {
-                    if (typeof settings.dvrEnabled !== 'undefined') {
-                        dvrState.userEnabled = settings.dvrEnabled;
-                        console.log('[DVR UI] Settings toggled. DVR User Enabled:', dvrState.userEnabled);
-                        // Force update UI visibility immediately
-                        if (!dvrState.userEnabled && dvrBar) {
-                            dvrBar.style.display = 'none';
-                        } else if (dvrState.userEnabled && dvrState.enabled && dvrState.isSubscriber === false && dvrBar) {
-                            dvrBar.style.display = 'block';
-                        }
-                    }
-                    if (typeof settings.donationIconEnabled !== 'undefined') {
-                        dvrState.donationIconEnabled = settings.donationIconEnabled;
-                        const donBtn = document.getElementById('dvr-donation-btn');
-                        if (donBtn) {
-                            donBtn.style.display = dvrState.donationIconEnabled ? 'inline-block' : 'none';
-                        }
-                    }
-                }
-            } else if (event.data.type === 'DVR_STATUS') {
+            if (event.data.type === 'DVR_STATUS') {
                 dvrState.enabled = event.data.enabled;
                 dvrState.totalDuration = event.data.totalDuration || 0;
                 dvrState.channelName = event.data.channelName;
