@@ -10,6 +10,14 @@
 
 <body>
   <div class="container">
+    <!-- Update Banner (hidden by default) -->
+    <div class="update-banner" id="updateBanner" style="display: none;">
+      <span class="update-text" id="updateText" data-i18n="update_available">🔥 Mise à jour disponible !</span>
+      <span class="update-version" id="updateVersion"></span>
+      <button class="update-btn" id="updateBtn" data-i18n="update_download">📥 Télécharger</button>
+      <span class="update-success" id="updateSuccess" style="display: none;" data-i18n="update_success">✅ ZIP téléchargé !</span>
+    </div>
+
     <div class="header">
       <div class="logo">
         <svg viewBox="0 0 24 24" width="28" height="28">
@@ -18,34 +26,42 @@
         </svg>
         <span>AdBlocker+</span>
       </div>
+      <button class="lang-btn" id="langBtn" title="Switch language">FR</button>
     </div>
 
     <div class="status-section">
       <div class="status-indicator" id="statusIndicator">
         <span class="status-dot"></span>
-        <span class="status-text" id="statusText">Actif</span>
+        <span class="status-text" id="statusText" data-i18n="status_active">Actif</span>
       </div>
     </div>
 
     <div class="toggle-section" style="flex-direction: column; align-items: stretch; gap: 15px;">
       <div class="toggle-row" style="display: flex; justify-content: space-between; align-items: center;">
-        <span class="toggle-label" style="margin-left: 0; font-weight: 500;">Bloquer les pubs</span>
+        <span class="toggle-label" style="margin-left: 0; font-weight: 500;" data-i18n="toggle_adblock">Bloquer les pubs</span>
         <label class="toggle">
           <input type="checkbox" id="adblockToggle" checked>
           <span class="slider"></span>
         </label>
       </div>
       <div class="toggle-row" style="display: flex; justify-content: space-between; align-items: center;">
-        <span class="toggle-label" style="margin-left: 0; font-weight: 500;">Débloquer les VODs</span>
+        <span class="toggle-label" style="margin-left: 0; font-weight: 500;" data-i18n="toggle_vod">Débloquer les VODs</span>
         <label class="toggle">
           <input type="checkbox" id="vodToggle" checked>
           <span class="slider"></span>
         </label>
       </div>
       <div class="toggle-row" style="display: flex; justify-content: space-between; align-items: center;">
-        <span class="toggle-label" style="margin-left: 0; font-weight: 500;">Bouton DVR (Retour arrière)</span>
+        <span class="toggle-label" style="margin-left: 0; font-weight: 500;" data-i18n="toggle_dvr">Bouton DVR (Retour arrière)</span>
         <label class="toggle">
           <input type="checkbox" id="dvrToggle" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="toggle-row" style="display: flex; justify-content: space-between; align-items: center;">
+        <span class="toggle-label" style="margin-left: 0; font-weight: 500;" data-i18n="toggle_donation">Bouton de Don (Lecteur)</span>
+        <label class="toggle">
+          <input type="checkbox" id="donationToggle" checked>
           <span class="slider"></span>
         </label>
       </div>
@@ -54,16 +70,19 @@
     <div class="stats-section">
       <div class="stat">
         <span class="stat-value" id="adsBlocked">0</span>
-        <span class="stat-label">🚫 Pubs bloquées</span>
+        <span class="stat-label" data-i18n="stat_ads">🚫 Pubs bloquées</span>
       </div>
       <div class="stat">
         <span class="stat-value" id="vodsUnlocked">0</span>
-        <span class="stat-label">🔓 VODs débloquées</span>
+        <span class="stat-label" data-i18n="stat_vods">🔓 VODs débloquées</span>
       </div>
     </div>
 
     <div class="footer">
-      <span>Pubs + VODs Sub-Only = Bye bye 👋</span>
+      <a href="https://ko-fi.com/tisarr" target="_blank" class="donation-btn" data-i18n="donation_btn">
+        ☕ Soutenir le projet
+      </a>
+      <span class="footer-msg" data-i18n="footer_msg">Pubs + VODs Sub-Only = Bye bye 👋</span>
     </div>
   </div>
   <script src="popup.js"></script>

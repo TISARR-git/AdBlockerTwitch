@@ -2,9 +2,11 @@
   <img src="icons/icon128.png" alt="Twitch AdBlocker Logo" width="128">
   <h1>🛡️ Twitch AdBlocker + DVR & VOD Unlocker</h1>
   <p>Une extension de navigateur tout-en-un pour bloquer les publicités Twitch, débloquer les VODs sub-only, et ajouter un lecteur DVR en direct.</p>
+  <p><a href="README_EN.md">EN English version</a></p>
 
   [![Dernière Version](https://img.shields.io/github/v/release/TISARR-git/AdBlockerTwitch?label=version)](https://github.com/TISARR-git/AdBlockerTwitch/releases)
   [![Platform](https://img.shields.io/badge/plateforme-Google%20Chrome-orange.svg)](https://www.google.com/chrome/)
+  [![Ko-Fi](https://img.shields.io/badge/Ko--fi-Soutenir%20le%20projet-FF5E5B?style=flat&logo=ko-fi&logoColor=white)](https://ko-fi.com/tisarr)
 </div>
 
 ---

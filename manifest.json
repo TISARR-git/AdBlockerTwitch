@@ -1,13 +1,15 @@
 {
   "manifest_version": 3,
   "name": "Twitch AdBlocker+",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Block Twitch ads + Watch sub-only VODs for free",
   "permissions": [
-    "storage"
+    "storage",
+    "downloads"
   ],
   "host_permissions": [
-    "*://*.twitch.tv/*"
+    "*://*.twitch.tv/*",
+    "*://api.github.com/*"
   ],
   "background": {
     "service_worker": "scripts/background.js"

@@ -112,14 +112,15 @@
             settings: {
                 adBlockEnabled: settings.adBlockEnabled !== false,
                 vodUnlockEnabled: settings.vodUnlockEnabled !== false,
-                dvrEnabled: settings.dvrEnabled !== false
+                dvrEnabled: settings.dvrEnabled !== false,
+                donationIconEnabled: settings.donationIconEnabled !== false
             }
         }, '*');
     }
 
     // Load initial settings and inject
     if (isExtensionValid()) {
-        chrome.storage.local.get(['adBlockEnabled', 'vodUnlockEnabled', 'dvrEnabled'], (result) => {
+        chrome.storage.local.get(['adBlockEnabled', 'vodUnlockEnabled', 'dvrEnabled', 'donationIconEnabled'], (result) => {
             // First broadcast to catch any instantly executing scripts
             broadcastSettings(result);
 
@@ -129,14 +130,14 @@
                     const currentSettings = {};
                     let updated = false;
                     for (let [key, { newValue }] of Object.entries(changes)) {
-                        if (['adBlockEnabled', 'vodUnlockEnabled', 'dvrEnabled'].includes(key)) {
+                        if (['adBlockEnabled', 'vodUnlockEnabled', 'dvrEnabled', 'donationIconEnabled'].includes(key)) {
                             currentSettings[key] = newValue;
                             updated = true;
                         }
                     }
                     if (updated) {
                         // Blend with existing unchanged settings
-                        chrome.storage.local.get(['adBlockEnabled', 'vodUnlockEnabled', 'dvrEnabled'], (latest) => {
+                        chrome.storage.local.get(['adBlockEnabled', 'vodUnlockEnabled', 'dvrEnabled', 'donationIconEnabled'], (latest) => {
                             broadcastSettings(latest);
                         });
                     }
@@ -155,4 +156,9 @@
     injectScriptSync('scripts/vaft.js', 'twitch-vaft-injected');
     injectScriptSync('scripts/dvr-ui.js', 'twitch-dvr-ui-injected');
     injectScriptSync('scripts/chat-undelete.js', 'twitch-chat-undelete-injected');
+
+    // Check for updates (only on main frame, not iframes)
+    if (window === window.top && isExtensionValid()) {
+        sendMessage({ type: 'checkUpdate' });
+    }
 })();

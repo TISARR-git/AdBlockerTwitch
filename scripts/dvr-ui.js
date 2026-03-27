@@ -23,7 +23,8 @@
         lastPlayTime: 0,        // For stall detection
         userAdjustingVolume: false, // Flag to prevent guardian during user interaction
         preferredQuality: -1,   // Persist quality selection
-        isSubscriber: null      // null: waiting, true: sub, false: non-sub
+        isSubscriber: null,     // null: waiting, true: sub, false: non-sub
+        donationIconEnabled: true // Show Ko-fi heart icon
     };
 
     // Listen for early sub status before UI initializes
@@ -773,6 +774,7 @@
                     <div class="dvr-tooltip">00:00:00</div>
                 </div>
                 <button class="dvr-live-btn">LIVE</button>
+                <a href="https://ko-fi.com/tisarr" target="_blank" class="dvr-donation-btn" id="dvr-donation-btn" title="Soutenir le projet">❤️</a>
             </div>
         `;
 
@@ -908,9 +910,27 @@
             .dvr-live-btn.behind:hover {
                 background: #888;
             }
+            .dvr-donation-btn {
+                text-decoration: none;
+                font-size: 16px;
+                padding: 2px 4px;
+                border-radius: 4px;
+                transition: transform 0.2s ease, background 0.2s;
+            }
+            .dvr-donation-btn:hover {
+                transform: scale(1.1);
+                background: rgba(255,255,255,0.1);
+            }
         `;
 
         document.head.appendChild(style);
+
+        // Apply initial state
+        const donationBtn = container.querySelector('#dvr-donation-btn');
+        if (donationBtn) {
+            donationBtn.style.display = dvrState.donationIconEnabled ? 'inline-block' : 'none';
+        }
+
         return container;
     }
 
@@ -1392,14 +1412,23 @@
 
             if (event.data.type === 'TWITCH_ADBLOCK_SETTINGS') {
                 const settings = event.data.settings;
-                if (settings && typeof settings.dvrEnabled !== 'undefined') {
-                    dvrState.userEnabled = settings.dvrEnabled;
-                    console.log('[DVR UI] Settings toggled. DVR User Enabled:', dvrState.userEnabled);
-                    // Force update UI visibility immediately
-                    if (!dvrState.userEnabled && dvrBar) {
-                        dvrBar.style.display = 'none';
-                    } else if (dvrState.userEnabled && dvrState.enabled && dvrState.isSubscriber === false && dvrBar) {
-                        dvrBar.style.display = 'block';
+                if (settings) {
+                    if (typeof settings.dvrEnabled !== 'undefined') {
+                        dvrState.userEnabled = settings.dvrEnabled;
+                        console.log('[DVR UI] Settings toggled. DVR User Enabled:', dvrState.userEnabled);
+                        // Force update UI visibility immediately
+                        if (!dvrState.userEnabled && dvrBar) {
+                            dvrBar.style.display = 'none';
+                        } else if (dvrState.userEnabled && dvrState.enabled && dvrState.isSubscriber === false && dvrBar) {
+                            dvrBar.style.display = 'block';
+                        }
+                    }
+                    if (typeof settings.donationIconEnabled !== 'undefined') {
+                        dvrState.donationIconEnabled = settings.donationIconEnabled;
+                        const donBtn = document.getElementById('dvr-donation-btn');
+                        if (donBtn) {
+                            donBtn.style.display = dvrState.donationIconEnabled ? 'inline-block' : 'none';
+                        }
                     }
                 }
             } else if (event.data.type === 'DVR_STATUS') {

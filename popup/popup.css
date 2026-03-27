@@ -15,11 +15,87 @@ body {
   padding: 20px;
 }
 
+/* --- Update Banner --- */
+.update-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #ff6b35, #f7931e);
+  border-radius: 12px;
+  text-align: center;
+  animation: updatePulse 2s ease-in-out infinite;
+}
+
+@keyframes updatePulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 107, 53, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(255, 107, 53, 0.6); }
+}
+
+.update-text {
+  font-weight: 700;
+  font-size: 14px;
+  color: #fff;
+}
+
+.update-version {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+}
+
+.update-btn {
+  background: #fff;
+  color: #ff6b35;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.update-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.update-success {
+  font-size: 12px;
+  color: #fff;
+  font-weight: 600;
+}
+
 .header {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
+  position: relative;
+}
+
+.lang-btn {
+  position: absolute;
+  right: 0;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 4px 6px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1;
+  min-width: 32px;
+}
+
+.lang-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.05);
 }
 
 .logo {
@@ -194,11 +270,38 @@ body {
 
 .footer {
   text-align: center;
-  padding-top: 12px;
+  padding-top: 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
 
-.footer span {
+.donation-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #29abe0;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-shadow: 0 4px 10px rgba(41, 171, 224, 0.3);
+}
+
+.donation-btn:hover {
+  background: #39bbf0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(41, 171, 224, 0.4);
+}
+
+.footer-msg {
   font-size: 11px;
   color: #6d6d72;
   font-style: italic;
