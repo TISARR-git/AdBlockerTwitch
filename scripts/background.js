@@ -51,11 +51,21 @@ async function checkForUpdate() {
     const remoteVersion = release.tag_name || '';
     const localVersion = chrome.runtime.getManifest().version;
 
-    // Find ZIP asset or fallback to zipball
+    // Detect browser type (Firefox uses moz-extension://)
+    const isFirefox = chrome.runtime.getURL('').startsWith('moz-extension://');
+
+    // Find the correct asset based on the browser
     let downloadUrl = release.zipball_url;
     if (release.assets && release.assets.length > 0) {
-      const zipAsset = release.assets.find(a => a.name.endsWith('.zip'));
-      if (zipAsset) downloadUrl = zipAsset.browser_download_url;
+      if (isFirefox) {
+        // Priority: Look for Firefox .xpi (as defined in release.yml)
+        const fxAsset = release.assets.find(a => a.name.endsWith('.xpi'));
+        if (fxAsset) downloadUrl = fxAsset.browser_download_url;
+      } else {
+        // Priority: Look for Chrome .zip (specifically with 'Chrome' in name)
+        const chromeAsset = release.assets.find(a => a.name.includes('Chrome') && a.name.endsWith('.zip'));
+        if (chromeAsset) downloadUrl = chromeAsset.browser_download_url;
+      }
     }
 
     await chrome.storage.local.set({

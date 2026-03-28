@@ -806,7 +806,7 @@
                     <div class="dvr-tooltip">00:00:00</div>
                 </div>
                 <button class="dvr-live-btn">LIVE</button>
-                <a href="https://ko-fi.com/tisarr" target="_blank" class="dvr-donation-btn" id="dvr-donation-btn" title="Soutenir le projet">❤️</a>
+                <a href="https://ko-fi.com/tisarr" target="_blank" class="dvr-donation-btn" id="dvr-donation-btn" title="Support the project">❤️</a>
             </div>
         `;
 
@@ -1232,7 +1232,7 @@
         // Only initialize DVR on live stream pages (direct channel URLs)
         // Skip on VOD pages and clip pages - native player works fine there
         const path = window.location.pathname;
-        if (path.startsWith('/videos/') || path.includes('/clip/')) {
+        if (path.startsWith('/videos/') || path.includes('/videos') || path.includes('/clip/')) {
             console.log('[DVR UI] On VOD/clip page, skipping DVR');
             return;
         }
@@ -1474,11 +1474,21 @@
             // This prevents resets when URL changes but channel is same (e.g. /video/x)
             if (channelName && dvrState.channelName && channelName.toLowerCase() === dvrState.channelName.toLowerCase() && dvrState.initialized) {
                 console.log('[DVR UI] Channel name unchanged (' + channelName + '), ignoring re-init');
+                const existingBar = document.getElementById('twitch-custom-dvr-bar');
+                if (existingBar && dvrState.enabled && dvrState.userEnabled && dvrState.isSubscriber === false) {
+                    existingBar.style.display = 'block';
+                }
+                
+                // Update the video element in case it was recreated (SPA navigation)
+                const newVideo = findVideoElement();
+                if (newVideo) {
+                    dvrState.videoElement = newVideo;
+                }
                 return;
             }
 
             // Reset state for new channel
-            const isRealChannelChange = !dvrState.channelName || channelName.toLowerCase() !== dvrState.channelName.toLowerCase();
+            const isRealChannelChange = !dvrState.channelName || !channelName || channelName.toLowerCase() !== dvrState.channelName.toLowerCase();
             dvrState.channelName = channelName;
             dvrState.initialized = true;
             dvrState.enabled = false;
@@ -1561,7 +1571,7 @@
                                     return;
                                 }
 
-                                // Si les contrôles du lecteur sont chargés mais qu'il n'y a pas de seekbar au bout d'environ 3 secondes (6 * 500ms)
+                                // If player controls are loaded but there's no native seekbar after ~3 seconds (6 * 500ms)
                                 const playerControls = document.querySelector('.player-controls__left-control-group') || document.querySelector('[data-a-target="player-controls"]');
                                 if (playerControls && domChecksAttempts > 6) {
                                     console.log('[DVR UI] DOM Fallback: Player controls loaded but no native DVR found. Showing custom DVR.');

@@ -5,7 +5,8 @@
   <p><a href="README.md">FR Version française</a></p>
 
   [![Latest Version](https://img.shields.io/github/v/release/TISARR-git/AdBlockerTwitch?label=version)](https://github.com/TISARR-git/AdBlockerTwitch/releases)
-  [![Platform](https://img.shields.io/badge/platform-Google%20Chrome-orange.svg)](https://www.google.com/chrome/)
+  [![Platform](https://img.shields.io/badge/Chrome-orange?logo=googlechrome&logoColor=white)](https://www.google.com/chrome/)
+  [![Platform](https://img.shields.io/badge/Firefox-red?logo=firefoxbrowser&logoColor=white)](https://www.mozilla.org/firefox/)
   [![Ko-Fi](https://img.shields.io/badge/Ko--fi-Support%20the%20project-FF5E5B?style=flat&logo=ko-fi&logoColor=white)](https://ko-fi.com/tisarr)
 </div>
 
@@ -16,22 +17,40 @@
 * 🚫 **Ad Blocking (Zero-Ad)**: Intercepts and blocks Twitch ads seamlessly without quality loss or loading screens. Keeps the live stream smooth.
 * 🔓 **VOD Unlocker (Sub-Only)**: Bypasses channel restrictions to let you watch subscriber-only replays for free.
 * ⏪ **DVR Player (Live)**: Caches the live stream so you can rewind and fast-forward during a live broadcast. If you're already subscribed to the channel, it won't appear.
-* 💬 **Chat Undelete (Anti-Moderation)**: Displays deleted messages (by moderation) in grey and strikethrough in the Twitch chat.
-* ⚙️ **Control Popup**: Enable or disable each feature (Adblock, VOD, DVR) on the fly via the extension interface.
+* 🌐 **Cross-Browser**: Fully compatible with **Google Chrome** (and Chromium-based browsers like Brave/Edge) and **Mozilla Firefox**.
+* 📥 **Auto Updates**: The extension automatically detects new versions on GitHub and prompts you for download.
+* 💬 **Chat Undelete (Anti-Moderation)**: Displays messages deleted by moderation in the Twitch chat.
 
 ---
 
-## 🚀 Installation (Developer Mode)
+## 🚀 Installation
 
-Since this extension uses advanced methods to counter the Twitch player, it is not published on the Chrome Web Store. It has only been tested on **Google Chrome**:
+Because this extension uses advanced methods to counter the Twitch player, it must be installed manually. It is now compatible with **Chrome** and **Firefox**.
 
-1. **Download the source code**: Clone this GitHub repository or download it as a `.zip` file (and extract it).
-2. **Access Extensions**: Open **Google Chrome** and type `chrome://extensions/` in the address bar.
-3. **Developer Mode**: In the top right corner, enable the **"Developer mode"** toggle.
-4. **Load the extension**: Click the **"Load unpacked"** button that appeared in the top left.
-5. **Select the folder**: Select the extension folder (the folder containing `manifest.json`).
+### 🛠️ For Google Chrome (and Chromium browsers)
+1. **Download**: Download the `TwitchAdBlocker-Chrome.zip` file from the [latest Release](https://github.com/TISARR-git/AdBlockerTwitch/releases/latest) and extract it.
+2. **Extensions**: Open `chrome://extensions/` in your browser.
+3. **Developer Mode**: Enable **"Developer mode"** in the top right.
+4. **Load**: Click on **"Load unpacked"** and select the extracted folder.
 
-That's it! The extension is now active. 🎉
+### 🦊 For Mozilla Firefox
+1. **Download**: Download the `TwitchAdBlocker-Firefox.xpi` file from the [latest Release](https://github.com/TISARR-git/AdBlockerTwitch/releases/latest).
+2. **Extensions**: Open `about:addons` in Firefox.
+3. **Install**: Click on the gear icon (settings) and choose **"Install Add-on From File..."**. Select the `.xpi` file.
+
+---
+
+## 🖥️ Development & Compilation
+
+If you want to modify the code or compile your own versions:
+
+1. Clone the repository.
+2. The main source code is at the root (Chrome format).
+3. Run the build script to generate specific versions:
+   ```bash
+   node build.js
+   ```
+4. The ready-to-use files will be in the `dist/` folder.
 
 ---
 
@@ -39,18 +58,15 @@ That's it! The extension is now active. 🎉
 
 Once the extension is installed, it works silently in the background on all `*.twitch.tv/*` pages.
 
-* **Popup Menu**: Click on the extension icon in your browser bar to open the control panel.
-* **DVR Feature**: When watching a live stream, hover over the video player. A DVR progress bar will appear at the bottom, allowing you to click to rewind. To return to live, click on "GO LIVE".
-* **Statistics**: The popup displays in real-time the number of ads blocked so you know the extension is working for you.
+* **Popup Menu**: Click on the extension icon to open the control panel and toggle features.
+* **DVR Feature**: During a live stream, hover over the player. A bar appears at the bottom. Click to rewind, click "GO LIVE" to return to the live broadcast.
+* **Statistics**: The popup shows the number of ads blocked and VODs unlocked.
 
 ---
 
-## 🛠️ Technical Details & Architecture
+## 🛠️ Technical Details
 
-The extension uses multiple strategies:
-* **VAFT (`vaft.js`)**: Intercepts `Worker` access and overrides Twitch's `fetch` function to request clean playlists (M3U8), stripped of ad segments.
-* **DVR UI (`dvr-ui.js`)**: Dynamically replaces the native video component with an `HLS.js` instance when a rewind is requested on a live stream. CPU is preserved through the use of a `MutationObserver`.
-* **Content/Inject (`content.js`, `inject.js`)**: Critical synchronous injections triggered at the very beginning of page load (`document_start`) to get ahead of the Twitch player initialization.
+The extension uses synchronous injections (`document_start`) and hooks into the Twitch player's `WebWorkers` to intercept HLS playlists and remove ad segments before they are played.
 
 ---
 

@@ -13,7 +13,7 @@
 // ==/UserScript==
 (function () {
     'use strict';
-    const ourTwitchAdSolutionsVersion = 20;// Used to prevent conflicts with outdated versions of the scripts
+    const ourTwitchAdSolutionsVersion = 9999;// Used to prevent conflicts with outdated versions of the scripts
     if (typeof window.twitchAdSolutionsVersion !== 'undefined' && window.twitchAdSolutionsVersion >= ourTwitchAdSolutionsVersion) {
         console.log("skipping vaft as there's another script active. ourVersion:" + ourTwitchAdSolutionsVersion + " activeVersion:" + window.twitchAdSolutionsVersion);
         window.twitchAdSolutionsVersion = ourTwitchAdSolutionsVersion;
@@ -1550,7 +1550,11 @@
         }
     }
     declareOptions(window);
-    hookWindowWorker();
+    try {
+        hookWindowWorker();
+    } catch(e) {
+        console.error('[TwitchAdBlocker] hookWindowWorker error:', e);
+    }
     hookFetch();
     if (PlayerBufferingFix) {
         monitorPlayerBuffering();

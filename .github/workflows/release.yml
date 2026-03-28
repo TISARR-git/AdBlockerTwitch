@@ -3,24 +3,45 @@ name: Build and Release Extension
 on:
   push:
     tags:
-      - 'v*' # S'exécute uniquement si tu pousses un tag commençant par 'v' (ex: v1.0.0)
+      - 'v*' # Runs only when pushing a tag starting with 'v' (e.g. v1.0.0)
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Requis pour créer une release
+      contents: write # Required to create a release
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Zip extension files
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install web-ext -g
+
+      - name: Build both versions
+        run: node build.js
+
+      - name: Zip Chrome version
         run: |
-          zip -r TwitchAdBlocker-Extension.zip . -x "*.git*" "*.github*" ".gitignore"
+          cd dist/chrome
+          zip -r ../TwitchAdBlocker-Chrome.zip .
+
+      - name: Sign Firefox extension
+        run: web-ext sign --source-dir dist/firefox/ --channel unlisted --api-key ${{ secrets.AMO_JWT_ISSUER }} --api-secret ${{ secrets.AMO_JWT_SECRET }}
+
+      - name: Rename downloaded Firefox XPI
+        run: |
+          mv web-ext-artifacts/*.xpi dist/TwitchAdBlocker-Firefox.xpi
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: TwitchAdBlocker-Extension.zip
+          files: |
+            dist/TwitchAdBlocker-Chrome.zip
+            dist/TwitchAdBlocker-Firefox.xpi
           generate_release_notes: true

@@ -47,6 +47,7 @@
             const script = document.createElement('script');
             script.id = id;
             script.src = chrome.runtime.getURL(scriptName);
+            script.async = false; // [CRITICAL] Forces strict chronological execution order of injected scripts (inject.js first)
 
             // Insert at the very beginning of the document
             const target = document.head || document.documentElement;
