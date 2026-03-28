@@ -32,7 +32,7 @@ jobs:
           zip -r ../TwitchAdBlocker-Chrome.zip .
 
       - name: Sign Firefox extension
-        run: web-ext sign --source-dir dist/firefox/ --channel unlisted --api-key ${{ secrets.AMO_JWT_ISSUER }} --api-secret ${{ secrets.AMO_JWT_SECRET }}
+        run: web-ext sign --source-dir dist/firefox/ --channel unlisted --api-key ${{ secrets.AMO_JWT_ISSUER }} --api-secret ${{ secrets.AMO_JWT_SECRET }} --timeout 1200000
 
       - name: Rename downloaded Firefox XPI
         run: |
